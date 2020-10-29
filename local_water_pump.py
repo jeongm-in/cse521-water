@@ -26,11 +26,11 @@ def reading_sensors(para):
 
     if readMoisSens > 2.4:
         GPIO.output(para['pinMoisSens'], 1)
-        print('Too dry, water the flower \nCurrent reading: {:.2f}'
+        print('Dry soil. water the flower ASAP \nCurrent moisture: {:.2f}'
               .format(readMoisSens))
     else:
         GPIO.output(para['pinMoisSens'], 0)
-        print('the flow is fine now \nCurrent reading: {:.2f}'
+        print('The soil is fine now \nCurrent moisture: {:.2f}'
               .format(readMoisSens))
 
 
@@ -40,7 +40,7 @@ def main():
     for i in range(100):
         reading_sensors(para)
 
-        time.sleep(0.2)
+        time.sleep(1)
 
     GPIO.cleanup()
 

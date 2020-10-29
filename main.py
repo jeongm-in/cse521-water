@@ -121,19 +121,19 @@ def main():
     for i in range(1,100):
         if not i % awsSendPeriod:
             awsSending(awsClient, topic, data)
-            print('sending done')
-            
+            print('Sent to AWS')
             j = 0
             data = {}
             moisDataList = []
         elif not i % sensorReadPeriod:
             moisDataList.append(sensorReading(para))
-            print('reading done')
+            print('Moisure reading: {:.2f}'.format(sensorReading(para)))
+            # print('reading done')
             data['moisture'] = moisDataList
             j += 1
         else:
             print("Nothing to do now")
-
+            
         time.sleep(1)
 
     GPIO.cleanup()

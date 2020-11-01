@@ -122,6 +122,7 @@ def main():
         if not i % awsSendPeriod:
             awsSending(awsClient, topic, data)
             print('Sent to AWS')
+            
             j = 0
             data = {}
             moisDataList = []

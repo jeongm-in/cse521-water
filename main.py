@@ -51,7 +51,9 @@ def sensorReading(para):
     """
     read data sensors
     """
-    readMoisSens = AnalogIn(para['ads'], ADS.P1).voltage
+    reading = {}
+    reading['mois'] = AnalogIn(para['ads'], ADS.P1).voltage
+    reading['uv'] = AnalogIn(para['ads'], ADS.P2).voltage
 
     # if readMoisSens > 2.4:
     #     GPIO.output(para['pinMoisSens'], 1)
@@ -62,7 +64,7 @@ def sensorReading(para):
     #     print('the flow is fine now \nCurrent reading: {:.2f}'
     #           .format(readMoisSens))
 
-    return readMoisSens
+    return reading
 
 def awsConfig():
     """
@@ -126,10 +128,13 @@ def main():
             data = {}
             moisDataList = []
         elif not i % sensorReadPeriod:
-            moisDataList.append(sensorReading(para))
-            print('Moisure reading: {:.2f}'.format(sensorReading(para)))
+            moisDataList.append(sensorReading(para)['mois'])
+            UVDataList.append(sensorReading(para)['uv'])
+            print('Moisure reading: {:.2f}, UV reading: {:.2f}'
+                  .format(sensorReading(para)['mois'],sensorReading(para)['uv']))
             # print('reading done')
             data['moisture'] = moisDataList
+            data['UV'] = UVDataList
             j += 1
         else:
             print("Nothing to do now")

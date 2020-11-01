@@ -40,9 +40,9 @@ def sensorConfig():
     i2c = busio.I2C(board.SCL, board.SDA)
     para['ads'] = ADS.ADS1115(i2c)
 
-    para['pinMoisSens'] = 21
+    para['pinPump'] = 21
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(para['pinMoisSens'], GPIO.OUT)
+    GPIO.setup(para['pinPump'], GPIO.OUT)
 
     return para
 
@@ -120,6 +120,7 @@ def main():
     j = 0
     data = {}
     moisDataList = []
+    UVDataList = []
     for i in range(1,100):
         if not i % awsSendPeriod:
             awsSending(awsClient, topic, data)

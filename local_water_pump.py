@@ -14,9 +14,9 @@ def config():
     i2c = busio.I2C(board.SCL, board.SDA)
     para['ads'] = ADS.ADS1115(i2c)
 
-    para['pinMoisSens'] = 21
+    para['pinPump'] = 21
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(para['pinMoisSens'], GPIO.OUT)
+    GPIO.setup(para['pinPump'], GPIO.OUT)
 
     return para
 
@@ -25,12 +25,12 @@ def reading_sensors(para):
     readMoisSens = AnalogIn(para['ads'], ADS.P1).voltage
 
     if readMoisSens > 2.4:
-        GPIO.output(para['pinMoisSens'], 1)
-        print('Dry soil. water the flower ASAP \nCurrent moisture: {:.2f}'
+        GPIO.output(para['pinPump'], 1)
+        print('Dry soil. water the flower ASAP \nCurrent moisture: {:.8f}'
               .format(readMoisSens))
     else:
-        GPIO.output(para['pinMoisSens'], 0)
-        print('The soil is fine now \nCurrent moisture: {:.2f}'
+        GPIO.output(para['pinPump'], 0)
+        print('The soil is fine now \nCurrent moisture: {:.8f}'
               .format(readMoisSens))
 
 

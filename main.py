@@ -22,7 +22,7 @@ sensorReadPeriod = 1  # 1 sec
 awsSendPeriod = 5     # 5 sec
 awsListenPeriod = 5   # 5 sec
 
-def customCallback(client, userdata, message):
+def dataReceive_callback(client, userdata, message):
     print("Received a new message")
     print(message.payload)
     print("from topic")
@@ -91,6 +91,7 @@ def awsConfig():
 
     # Connect and subscribe to AWS IoT
     myAWSIoTMQTTClient.connect()
+    myAWSIoTMQTTClient.subscribe(topic, 1, dataReceive_callback)
 
     return myAWSIoTMQTTClient, topic
 
@@ -99,16 +100,14 @@ def awsSending(client, topic, data):
     send data to AWS
     """
     message = {}
-    message["message"] = "hello"
+    message["time"] = str(datetime.datetime.now())
 
-    state = {}
-    state['reported'] = {}
-    state['reported']['time'] = str(datetime.datetime.now())
+    info = {}
 
     for key in data.keys():
-        state['reported'][key] = data[key]
+        info[key] = data[key]
         
-    message["state"] = state
+    message["message"] = data
     messageJson = json.dumps(message)
     client.publish(topic, messageJson, 1)
 
@@ -129,11 +128,12 @@ def main():
             j = 0
             data = {}
             moisDataList = []
+            UVDataList = []
         elif not i % sensorReadPeriod:
             moisDataList.append(sensorReading(para)['mois'])
             UVDataList.append(sensorReading(para)['uv'])
             print('Moisure reading: {:.2f}, UV reading: {:.2f}'
-                  .format(sensorReading(para)['mois'],sensorReading(para)['uv']))
+                 .format(sensorReading(para)['mois'],sensorReading(para)['uv']))
             # print('reading done')
             data['moisture'] = moisDataList
             data['UV'] = UVDataList

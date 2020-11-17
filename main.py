@@ -171,8 +171,7 @@ def awsSending(client, topic, data):
     info = {}
 
     for key, value in data.items():
-        message['sensor_reading'] = key
-        message['val'] = value
+        message[key] = value
         
     # message["message"] = data
     messageJson = json.dumps(message)
@@ -210,7 +209,7 @@ def main():
             print('Moisure reading: {:.0f}%, UV reading: {:.1f} index'
                  .format(moisreading, uvreading))
             # print('reading done')
-            data['moisture'] = moisDataList
+            data['Humidity'] = moisDataList
             data['UV'] = UVDataList
             j += 1
         else:

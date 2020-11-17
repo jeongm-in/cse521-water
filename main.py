@@ -22,29 +22,62 @@ sensorReadPeriod = 1  # 1 sec
 awsSendPeriod = 5     # 5 sec
 awsListenPeriod = 5   # 5 sec
 
-def dataReceive_callback(client, userdata, message):
-    print("Received a new message")
-    print(message.payload)
-    print("from topic")
-    print(message.topic)
-    print("------\n\n")
+mode = 0    # 0: auto mode; 1: manual mode
+Connected = False
+
+para = dict()
+
+
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+
+        print("Connected to IoT")
+
+        global Connected  # Use global variable
+        Connected = True  # Signal connection
+
+    else:
+        print("Connection failed")
+
+
+def on_message(client, userdata, message):
+    print("Received a new message from IoT \n "
+          "---------------------------")
+    data = json.load(message.payload)
+
+    if data['mode'] == 'control':
+        if data['val'] == 'water':
+            GPIO.output(para['pinPump'], 1)
+            print('Watering by the request of IoT')
+        elif data['val'] == 'stop':
+            GPIO.output(para['pinPump'], 0)
+            print('Stop watering')
+    elif data['mode'] == 'mode_switch':
+        if data['val'] == 'auto':
+            global mode
+            mode = 0
+            print('Change mode to auto')
+        else:
+            global mode
+            mode = 1
+            print('Change mode to manual')
 
 
 def sensorConfig():
     """
     config sensors
     """
-    para = dict()
-
     GPIO.cleanup()
     i2c = busio.I2C(board.SCL, board.SDA)
+
+    global para
     para['ads'] = ADS.ADS1115(i2c)
 
     para['pinPump'] = 21
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(para['pinPump'], GPIO.OUT)
+    GPIO.output(para['pinPump'], 0)
 
-    return para
 
 
 def sensorReading(para):
@@ -76,9 +109,10 @@ def awsConfig():
     privateKeyPath = "cert/4ad4027780-private.pem.key"
     port = 8883
     clientId = "TEST_COMM"
-    topic = "$aws/things/cse521/shadow/sensor_reading"
+    upstream_topic = "$aws/things/cse521/shadow/message_to_iot"
+    downstream_topic = "$aws/things/cse521/shadow/message_to_pi"
 
-    myAWSIoTMQTTClient = None
+    # myAWSIoTMQTTClient = None
     myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId)
     myAWSIoTMQTTClient.configureEndpoint(host, port)
     myAWSIoTMQTTClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
@@ -90,10 +124,18 @@ def awsConfig():
     myAWSIoTMQTTClient.configureMQTTOperationTimeout(awsSendPeriod)  # 5 sec
 
     # Connect and subscribe to AWS IoT
-    myAWSIoTMQTTClient.connect()
-    myAWSIoTMQTTClient.subscribe(topic, 1, dataReceive_callback)
+    myAWSIoTMQTTClient.on_connect = on_connect
+    myAWSIoTMQTTClient.on_message = on_message
 
-    return myAWSIoTMQTTClient, topic
+    myAWSIoTMQTTClient.connect()
+    myAWSIoTMQTTClient.loop_start()  # start the loop
+    while not Connected:  # Wait for connection
+        time.sleep(0.1)
+    myAWSIoTMQTTClient.subscribe(downstream_topic)
+    # myAWSIoTMQTTClient.subscribe(downstream_topic, 1, dataReceive_callback)
+
+
+    return myAWSIoTMQTTClient, upstream_topic
 
 def awsSending(client, topic, data):
     """
@@ -105,16 +147,17 @@ def awsSending(client, topic, data):
     info = {}
 
     for key in data.keys():
-        info[key] = data[key]
+        message['mode'] = key
+        message['val'] = data[key]
         
-    message["message"] = data
+    # message["message"] = data
     messageJson = json.dumps(message)
     client.publish(topic, messageJson, 1)
 
 
 def main():
-    para = sensorConfig()
-    awsClient, topic = awsConfig()
+    sensorConfig()
+    awsClient, toIotTopic = awsConfig()
     
     j = 0
     data = {}
@@ -122,7 +165,13 @@ def main():
     UVDataList = []
     for i in range(1,100):
         if not i % awsSendPeriod:
-            awsSending(awsClient, topic, data)
+
+            # get averaged readings for each sensor
+            for key in data.keys:
+                data[key] = sum(data[key])/len(data[key])
+
+            # publish message to iot
+            awsSending(awsClient, toIotTopic, data)
             print('Sent to AWS')
             
             j = 0

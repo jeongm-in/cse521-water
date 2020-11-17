@@ -185,7 +185,7 @@ def main():
     data = {}
     moisDataList = []
     UVDataList = []
-    for i in range(1,100):
+    for i in range(1,300):
         if not i % awsSendPeriod:
 
             # get averaged readings for each sensor

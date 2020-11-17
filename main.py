@@ -41,27 +41,34 @@ def on_connect(client, userdata, flags, rc):
 
 
 def on_message(client, userdata, message):
-    print("Received a new message from IoT \n "
-          "---------------------------")
-    data = json.load(message.payload)
-
-    if data['mode'] == 'control':
-        if data['val'] == 'water':
-            GPIO.output(para['pinPump'], 1)
-            print('Watering by the request of IoT')
-        elif data['val'] == 'stop':
-            GPIO.output(para['pinPump'], 0)
-            print('Stop watering')
-    elif data['mode'] == 'mode_switch':
-        if data['val'] == 'auto':
+    print("---------------------------\n"
+          "Received a new message from IoT \n ")
+          
+    json_string = message.payload.decode("utf-8") 
+    json_string = json_string.replace("u'", "\"").replace("'", "\"")
+    data = json.loads(json_string)
+    #data = message.payload
+    #print(type(message.payload))
+    #print(type(str(message.payload)))
+    try:
+        if data['mode'] == 'control':
+            if data['val'] == 'water':
+                GPIO.output(para['pinPump'], 1)
+                print('Watering by the request of IoT')
+            elif data['val'] == 'stop':
+                GPIO.output(para['pinPump'], 0)
+                print('Stop watering')
+        elif data['mode'] == 'mode_switch':
             global mode
-            mode = 0
-            print('Change mode to auto')
-        else:
-            global mode
-            mode = 1
-            print('Change mode to manual')
-
+            if data['val'] == 'auto':
+                mode = 0
+                print('Change mode to auto')
+            else:
+                mode = 1
+                print('Change mode to manual')
+    except:
+        print('unrocognized command')
+    print("---------------------------")
 
 def sensorConfig():
     """
@@ -128,11 +135,11 @@ def awsConfig():
     myAWSIoTMQTTClient.on_message = on_message
 
     myAWSIoTMQTTClient.connect()
-    myAWSIoTMQTTClient.loop_start()  # start the loop
-    while not Connected:  # Wait for connection
-        time.sleep(0.1)
-    myAWSIoTMQTTClient.subscribe(downstream_topic)
-    # myAWSIoTMQTTClient.subscribe(downstream_topic, 1, dataReceive_callback)
+    # myAWSIoTMQTTClient.loop_start()  # start the loop
+    #while not Connected:  # Wait for connection
+    #    time.sleep(0.1)
+    # myAWSIoTMQTTClient.subscribe(downstream_topic)
+    myAWSIoTMQTTClient.subscribe(downstream_topic, 1, on_message)
 
 
     return myAWSIoTMQTTClient, upstream_topic
@@ -167,7 +174,7 @@ def main():
         if not i % awsSendPeriod:
 
             # get averaged readings for each sensor
-            for key in data.keys:
+            for key in data:
                 data[key] = sum(data[key])/len(data[key])
 
             # publish message to iot

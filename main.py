@@ -49,30 +49,27 @@ def on_message(client, userdata, message):
     json_string = message.payload.decode("utf-8") 
     json_string = json_string.replace("u'", "\"").replace("'", "\"")
     data = json.loads(json_string)
-
+    print(1)
     try:
         if data['cmd'] == 'control':
+            global waterFlag, rotateFlag
             if data['val'] == 'water_start':
                 GPIO.output(para['pinPump'], 1)
-                global waterFlag
                 waterFlag = True
 
                 print('Watering the plant')
             elif data['val'] == 'water_stop':
                 GPIO.output(para['pinPump'], 0)
-                global waterFlag
                 waterFlag = False
 
                 print('Stop watering')
             elif data['val'] == 'rotate_start':
                 GPIO.output(para['pinPump'], 1)
-                global rotateFlag
                 rotateFlag = True
 
                 print('Rotating the disc')
             elif data['val'] == 'rotate_stop':
                 GPIO.output(para['pinPump'], 0)
-                global rotateFlag
                 rotateFlag = False
 
                 print('Stop rotating')
@@ -210,7 +207,7 @@ def main():
             moisDataList.append(moisreading)
             uvreading = round(sensorReading(para)['uv']*10, 1)
             UVDataList.append(uvreading)
-            print('Moisure reading: {:.2f}%, UV reading: {:.2f} index'
+            print('Moisure reading: {:.0f}%, UV reading: {:.1f} index'
                  .format(moisreading, uvreading))
             # print('reading done')
             data['moisture'] = moisDataList

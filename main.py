@@ -191,7 +191,7 @@ def main():
 
             # get averaged readings for each sensor
             for key, value in data.items():
-                data[key] = sum(value)/len(value)
+                data[key] = round(sum(value)/len(value), 1)
 
             # publish message to iot
             awsSending(awsClient, toIotTopic, data)

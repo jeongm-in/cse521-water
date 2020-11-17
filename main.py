@@ -64,12 +64,12 @@ def on_message(client, userdata, message):
 
                 print('Stop watering')
             elif data['val'] == 'rotate_start':
-                GPIO.output(para['pinPump'], 1)
+                GPIO.output(para['pinDisc'], 1)
                 rotateFlag = True
 
                 print('Rotating the disc')
             elif data['val'] == 'rotate_stop':
-                GPIO.output(para['pinPump'], 0)
+                GPIO.output(para['pinDisc'], 0)
                 rotateFlag = False
 
                 print('Stop rotating')
@@ -80,7 +80,7 @@ def on_message(client, userdata, message):
             if data['val'] == 'auto':
                 autoMode = True
                 print('Change mode to auto')
-            else:
+            elif data['val'] == 'manual':
                 autoMode = False
                 print('Change mode to manual')
     except:
@@ -91,16 +91,19 @@ def sensorConfig():
     """
     config sensors
     """
-    GPIO.cleanup()
+    # GPIO.cleanup()
     i2c = busio.I2C(board.SCL, board.SDA)
 
     global para
     para['ads'] = ADS.ADS1115(i2c)
 
     para['pinPump'] = 21
+    para['pinDisc'] = 26
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(para['pinPump'], GPIO.OUT)
+    GPIO.setup(para['pinDisc'], GPIO.OUT)
     GPIO.output(para['pinPump'], 0)
+    GPIO.output(para['pinDisc'], 0)
 
 
 
@@ -152,10 +155,6 @@ def awsConfig():
     myAWSIoTMQTTClient.on_message = on_message
 
     myAWSIoTMQTTClient.connect()
-    # myAWSIoTMQTTClient.loop_start()  # start the loop
-    #while not iotConnected:  # Wait for connection
-    #    time.sleep(0.1)
-    # myAWSIoTMQTTClient.subscribe(downstream_topic)
     myAWSIoTMQTTClient.subscribe(downstream_topic, 1, on_message)
 
 

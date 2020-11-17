@@ -22,8 +22,10 @@ sensorReadPeriod = 1  # 1 sec
 awsSendPeriod = 5     # 5 sec
 awsListenPeriod = 5   # 5 sec
 
-mode = 0    # 0: auto mode; 1: manual mode
-Connected = False
+autoMode = True    # 0: auto mode; 1: manual mode
+waterFlag = False
+rotateFlag = False
+iotConnected = False
 
 para = dict()
 
@@ -33,8 +35,8 @@ def on_connect(client, userdata, flags, rc):
 
         print("Connected to IoT")
 
-        global Connected  # Use global variable
-        Connected = True  # Signal connection
+        global iotConnected  # Use global variable
+        iotConnected = True  # Signal connection
 
     else:
         print("Connection failed")
@@ -47,27 +49,45 @@ def on_message(client, userdata, message):
     json_string = message.payload.decode("utf-8") 
     json_string = json_string.replace("u'", "\"").replace("'", "\"")
     data = json.loads(json_string)
-    #data = message.payload
-    #print(type(message.payload))
-    #print(type(str(message.payload)))
+
     try:
-        if data['mode'] == 'control':
-            if data['val'] == 'water':
+        if data['cmd'] == 'control':
+            if data['val'] == 'water_start':
                 GPIO.output(para['pinPump'], 1)
-                print('Watering by the request of IoT')
-            elif data['val'] == 'stop':
+                global waterFlag
+                waterFlag = True
+
+                print('Watering the plant')
+            elif data['val'] == 'water_stop':
                 GPIO.output(para['pinPump'], 0)
+                global waterFlag
+                waterFlag = False
+
                 print('Stop watering')
-        elif data['mode'] == 'mode_switch':
-            global mode
+            elif data['val'] == 'rotate_start':
+                GPIO.output(para['pinPump'], 1)
+                global rotateFlag
+                rotateFlag = True
+
+                print('Rotating the disc')
+            elif data['val'] == 'rotate_stop':
+                GPIO.output(para['pinPump'], 0)
+                global rotateFlag
+                rotateFlag = False
+
+                print('Stop rotating')
+            else:
+                print("Unknown control value")
+        elif data['cmd'] == 'mode_switch':
+            global autoMode
             if data['val'] == 'auto':
-                mode = 0
+                autoMode = True
                 print('Change mode to auto')
             else:
-                mode = 1
+                autoMode = False
                 print('Change mode to manual')
     except:
-        print('unrocognized command')
+        print('Unknown command')
     print("---------------------------")
 
 def sensorConfig():
@@ -136,7 +156,7 @@ def awsConfig():
 
     myAWSIoTMQTTClient.connect()
     # myAWSIoTMQTTClient.loop_start()  # start the loop
-    #while not Connected:  # Wait for connection
+    #while not iotConnected:  # Wait for connection
     #    time.sleep(0.1)
     # myAWSIoTMQTTClient.subscribe(downstream_topic)
     myAWSIoTMQTTClient.subscribe(downstream_topic, 1, on_message)
@@ -153,9 +173,9 @@ def awsSending(client, topic, data):
 
     info = {}
 
-    for key in data.keys():
-        message['mode'] = key
-        message['val'] = data[key]
+    for key, value in data.items():
+        message['sensor_reading'] = key
+        message['val'] = value
         
     # message["message"] = data
     messageJson = json.dumps(message)
@@ -174,8 +194,8 @@ def main():
         if not i % awsSendPeriod:
 
             # get averaged readings for each sensor
-            for key in data:
-                data[key] = sum(data[key])/len(data[key])
+            for key, value in data.items():
+                data[key] = sum(value)/len(value)
 
             # publish message to iot
             awsSending(awsClient, toIotTopic, data)
@@ -186,10 +206,12 @@ def main():
             moisDataList = []
             UVDataList = []
         elif not i % sensorReadPeriod:
-            moisDataList.append(sensorReading(para)['mois'])
-            UVDataList.append(sensorReading(para)['uv'])
-            print('Moisure reading: {:.2f}, UV reading: {:.2f}'
-                 .format(sensorReading(para)['mois'],sensorReading(para)['uv']))
+            moisreading = round(-42.9*sensorReading(para)['mois']+156.6)
+            moisDataList.append(moisreading)
+            uvreading = round(sensorReading(para)['uv']*10, 1)
+            UVDataList.append(uvreading)
+            print('Moisure reading: {:.2f}%, UV reading: {:.2f} index'
+                 .format(moisreading, uvreading))
             # print('reading done')
             data['moisture'] = moisDataList
             data['UV'] = UVDataList

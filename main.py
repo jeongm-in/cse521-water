@@ -26,8 +26,10 @@ autoMode = True    # 0: auto mode; 1: manual mode
 waterFlag = False
 rotateFlag = False
 iotConnected = False
+desired_hum = 0
 
 para = dict()
+
 
 
 def on_connect(client, userdata, flags, rc):
@@ -49,7 +51,6 @@ def on_message(client, userdata, message):
     json_string = message.payload.decode("utf-8") 
     json_string = json_string.replace("u'", "\"").replace("'", "\"")
     data = json.loads(json_string)
-    print(1)
     try:
         if data['cmd'] == 'control':
             global waterFlag, rotateFlag
@@ -86,6 +87,12 @@ def on_message(client, userdata, message):
             elif data['val'] == 'manual':
                 autoMode = False
                 print('Change mode to manual')
+        elif data['cmd'] == 'humidity_control':
+            #global desired_hum
+            #desired_hum = str(data['val'])
+            print('Set desired humidity to ')
+            print(data['val'])
+            #print('Set desired humidity to {:.0f}'.format(desired_hum))
     except:
         print('Unknown command')
     print("---------------------------")

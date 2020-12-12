@@ -184,6 +184,7 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
         waterFlag_old = waterFlag
         rotateFlag_old = rotateFlag
 
+        print(waterFlag, waterFlag_old)
         return waterFlag_old, rotateFlag_old
 
     except:

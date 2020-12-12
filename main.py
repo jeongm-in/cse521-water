@@ -39,7 +39,7 @@ def main():
         while not hf.autoMode: # in manual mode
 
             time.sleep(.5)
-            print("manual mode")
+            # print("manual mode")
 
 
 

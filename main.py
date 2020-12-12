@@ -30,8 +30,6 @@ desired_hum = 0
 
 para = dict()
 
-
-
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
 
@@ -96,6 +94,7 @@ def on_message(client, userdata, message):
     except:
         print('Unknown command')
     print("---------------------------")
+
 
 def sensorConfig():
     """
@@ -187,45 +186,55 @@ def awsSending(client, topic, data):
     client.publish(topic, messageJson, 1)
 
 
-def main():
-    sensorConfig()
-    awsClient, toIotTopic = awsConfig()
-    
-    j = 0
+def collectData(para, moisDataList, UVDataList, data):
+    moisreading = round(-42.9 * sensorReading(para)['mois'] + 156.6)
+    moisDataList.append(moisreading)
+    uvreading = round(sensorReading(para)['uv'] * 10, 1)
+    UVDataList.append(uvreading)
+    print('Moisure reading: {:.0f}%, UV reading: {:.1f} index'
+          .format(moisreading, uvreading))
+    # print('reading done')
+    data['Humidity'] = moisDataList
+    data['UV'] = UVDataList
+    print(data)
+
+
+def sendData(awsClient, toIotTopic, data, moisDataList, UVDataList):
+    # get averaged readings for each sensor
+    for key, value in data.items():
+        data[key] = round(sum(value) / len(value), 1)
+
+    # clean up reading data
     data = {}
     moisDataList = []
     UVDataList = []
-    for i in range(1,300):
-        if not i % awsSendPeriod:
 
-            # get averaged readings for each sensor
-            for key, value in data.items():
-                data[key] = round(sum(value)/len(value), 1)
+    # publish message to iot
+    awsSending(awsClient, toIotTopic, data)
+    print('Sent to AWS')
 
-            # publish message to iot
-            awsSending(awsClient, toIotTopic, data)
-            print('Sent to AWS')
-            
-            j = 0
-            data = {}
-            moisDataList = []
-            UVDataList = []
-        elif not i % sensorReadPeriod:
-            moisreading = round(-42.9*sensorReading(para)['mois']+156.6)
-            moisDataList.append(moisreading)
-            uvreading = round(sensorReading(para)['uv']*10, 1)
-            UVDataList.append(uvreading)
-            print('Moisure reading: {:.0f}%, UV reading: {:.1f} index'
-                 .format(moisreading, uvreading))
-            # print('reading done')
-            data['Humidity'] = moisDataList
-            data['UV'] = UVDataList
-            j += 1
-        else:
-            print("Nothing to do now")
-            
-        time.sleep(1)
 
+def main():
+    sensorConfig()
+    awsClient, toIotTopic = awsConfig()
+
+    data = {}
+    moisDataList = []
+    UVDataList = []
+
+
+    tCollectData = threading.Timer(1, collectData, args=(para, moisDataList, UVDataList, data))
+    # tSendData = threading.Timer(5, sendData, args=(awsClient, toIotTopic, data, moisDataList, UVDataList))
+
+    tCollectData.start()
+    # tSendData.start()
+
+    tCollectData.join()
+    # tSendData.join()
+
+    for i in range(27):
+        print("hello")
+        time.sleep(.5)
     GPIO.cleanup()
 
 

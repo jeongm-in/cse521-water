@@ -221,6 +221,7 @@ def main():
     data = {}
     moisDataList = []
     UVDataList = []
+    j = 0
     
     for i in range(1,300):
         if not i % awsSendPeriod:

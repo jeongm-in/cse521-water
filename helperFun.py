@@ -150,8 +150,11 @@ def on_connect(client, userdata, flags, rc):
 when set as auto mode
 """
 def autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotateFlag_old):
-    moisAvg = round(sum(moisDataList) / len(moisDataList), 1)
-    UVAvg = round(sum(UVDataList) / len(UVDataList), 1)
+    try:
+        moisAvg = round(sum(moisDataList) / len(moisDataList), 1)
+        UVAvg = round(sum(UVDataList) / len(UVDataList), 1)
+    except:
+        moisAvg
 
     if moisAvg < humidity_control:  # if more dry than the preset humidity, open pump
         GPIO.output(para['pinPump'], 1)

@@ -105,8 +105,8 @@ def sendData(awsClient, toIotTopic, data, moisDataList, UVDataList):
 
     # clean up reading data
     data = {}
-    moisDataList.clear()
-    UVDataList.clear()
+    moisDataList = [moisDataList[0]]
+    UVDataList = [UVDataList[0]]
     print("cleaned")
 
 

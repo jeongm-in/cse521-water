@@ -137,8 +137,8 @@ def sendData(awsClient, toIotTopic, data, moisDataList, UVDataList):
 
     # clean up reading data
     data = {}
-    moisDataList = []
-    UVDataList = []
+    moisDataList.clear()
+    UVDataList.clear()
     print("cleaned")
 
 
@@ -153,8 +153,8 @@ def main():
     
     tCollectData = RepeatedTimer(1, collectData, para, moisDataList, UVDataList, data)
     tSendData = RepeatedTimer(5, sendData, awsClient, toIotTopic, data, moisDataList, UVDataList)
-
-    tSendData.joinEable(True)
+    
+    tCollectData.joinEnable(True)
     
     time.sleep(100)
     

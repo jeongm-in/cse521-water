@@ -59,11 +59,11 @@ def on_message(client, userdata, message):
     json_string = message.payload.decode("utf-8")
     json_string = json_string.replace("u'", "\"").replace("'", "\"")
     data = json.loads(json_string)
-    global autoMode
+
     try:
         para = sf.pinMap()
         if data['cmd'] == 'control':
-            if autoMode:
+            if hf.autoMode:
                 print('Auto mode is ON, switch to manual mode first')
             else:
                 if data['val'] == 'water_start':

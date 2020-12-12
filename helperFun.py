@@ -50,12 +50,12 @@ def collectData(para, moisDataList, UVDataList, data):
     moisDataList.append(moisreading)
     uvreading = round(sf.sensorReading(para)['uv'] * 10, 1)
     UVDataList.append(uvreading)
-    # print('Moisure reading: {:.0f}%, UV reading: {:.1f} index'
-    #       .format(moisreading, uvreading))
+    print('Moisure reading: {:.0f}%, UV reading: {:.1f} index'
+          .format(moisreading, uvreading))
 
     data['Humidity'] = moisDataList
     data['UV'] = UVDataList
-    print(data)
+    # print(data)
 
 
 def sendData(awsClient, toIotTopic, data, moisDataList, UVDataList):

@@ -9,7 +9,6 @@ import sensorFun as sf
 # specify the period as integer second
 sensorReadPeriod = 1  # 1 sec
 awsSendPeriod = 5     # 5 sec
-# awsListenPeriod = 5   # 5 sec
 
 
 def main():
@@ -21,7 +20,7 @@ def main():
     moisDataList = []
     UVDataList = []
 
-    
+
     tCollectData = hf.RepeatedTimer(sensorReadPeriod, hf.collectData, para, moisDataList, UVDataList, data)
     tSendData = hf.RepeatedTimer(awsSendPeriod, hf.sendData, awsClient, toIotTopic, data, moisDataList, UVDataList)
     
@@ -29,8 +28,6 @@ def main():
 
     waterFlag_old = hf.waterFlag
     rotateFlag_old = hf.rotateFlag
-
-    # desired_hum = 50
 
     while True:
 

@@ -50,12 +50,12 @@ def collectData(para, moisDataList, UVDataList, data):
     moisDataList.append(moisreading)
     uvreading = round(sf.sensorReading(para)['uv'] * 10, 1)
     UVDataList.append(uvreading)
-    print('Moisure reading: {:.0f}%, UV reading: {:.1f} index'
-          .format(moisreading, uvreading))
-    # print('reading done')
+    # print('Moisure reading: {:.0f}%, UV reading: {:.1f} index'
+    #       .format(moisreading, uvreading))
+
     data['Humidity'] = moisDataList
     data['UV'] = UVDataList
-    # print(data)
+    print(data)
 
 
 def sendData(awsClient, toIotTopic, data, moisDataList, UVDataList):
@@ -71,17 +71,18 @@ def sendData(awsClient, toIotTopic, data, moisDataList, UVDataList):
     data = dict()
     moisDataList.clear()
     UVDataList.clear()
-    print("cleaned")
 
 
 """
-when set as auto mode
+execute at auto mode
 """
 def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_old):
 
     try:
         moisAvg = round(sum(moisDataList) / len(moisDataList), 1)
         UVAvg = round(sum(UVDataList) / len(UVDataList), 1)
+
+        global waterFlag, rotateFlag
         para = sf.pinMap()
 
         if moisAvg < desired_hum:  # if more dry than the preset humidity, open pump
@@ -91,7 +92,6 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
             GPIO.output(para['pinPump'], 0)
             waterFlag = False
 
-        print(waterFlag, waterFlag_old)
 
         if not waterFlag_old and waterFlag:  # if becomes dry
             print("Auto: too dry, water the plant")
@@ -107,7 +107,7 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
 
         if not rotateFlag_old and rotateFlag:  # if sunlight becomes available
             print("Auto: Sunlight! Rotating disk")
-        elif waterFlag_old and not waterFlag:
+        elif rotateFlag_old and not rotateFlag:
             print("Auto: No Sunlight! Stop Rotating")
 
         waterFlag_old = waterFlag

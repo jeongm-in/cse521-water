@@ -66,7 +66,6 @@ def on_message(client, userdata, message):
             if autoMode:
                 print('Auto mode is ON, switch to manual mode first')
             else:
-                # global waterFlag, rotateFlag
                 if data['val'] == 'water_start':
                     GPIO.output(para['pinPump'], 1)
                     hf.waterFlag = True
@@ -104,12 +103,10 @@ def on_message(client, userdata, message):
 
                 print('Change mode to manual')
         elif data['cmd'] == 'humidity_control':
-            # global desired_hum
             hf.desired_hum = data['val']
 
             print('Set desired humidity to ')
             print(data['val'])
-            # print('Set desired humidity to {:.0f}'.format(desired_hum))
     except:
         print('Unknown command')
     print("---------------------------")
@@ -134,11 +131,8 @@ def awsSending(client, topic, data):
     message = {}
     message["time"] = str(datetime.datetime.now())
 
-    info = {}
-
     for key, value in data.items():
         message[key] = value
 
-    # message["message"] = data
     messageJson = json.dumps(message)
     client.publish(topic, messageJson, 1)

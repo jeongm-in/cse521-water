@@ -151,13 +151,13 @@ def on_connect(client, userdata, flags, rc):
 """
 when set as auto mode
 """
-def autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotateFlag_old):
+def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_old):
 
     try:
         moisAvg = round(sum(moisDataList) / len(moisDataList), 1)
         UVAvg = round(sum(UVDataList) / len(UVDataList), 1)
 
-        if moisAvg < humidity_control:  # if more dry than the preset humidity, open pump
+        if moisAvg < desired_hum:  # if more dry than the preset humidity, open pump
             GPIO.output(para['pinPump'], 1)
             waterFlag = True
         else:  # if not, close pump

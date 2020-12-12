@@ -92,11 +92,13 @@ def on_message(client, userdata, message):
                 if data['val'] == 'water_start':
                     GPIO.output(para['pinPump'], 1)
                     waterFlag = True
+                    print('Manual: Watering the plant')
+
                     time.sleep(1)
                     GPIO.output(para['pinPump'], 0)
                     waterFlag = False
+                    print('And stop')
 
-                    print('Manual: Watering the plant')
                 elif data['val'] == 'water_stop':
                     GPIO.output(para['pinPump'], 0)
                     waterFlag = False

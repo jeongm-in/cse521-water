@@ -153,32 +153,33 @@ def autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotate
     try:
         moisAvg = round(sum(moisDataList) / len(moisDataList), 1)
         UVAvg = round(sum(UVDataList) / len(UVDataList), 1)
+
+        if moisAvg < humidity_control:  # if more dry than the preset humidity, open pump
+            GPIO.output(para['pinPump'], 1)
+            waterFlag = True
+        else:  # if not, close pump
+            GPIO.output(para['pinPump'], 0)
+            waterFlag = False
+
+        if not waterFlag_old and waterFlag:  # if becomes dry
+            print("Auto: too dry, water the plant")
+        elif waterFlag_old and not waterFlag:
+            print("Auto: proper humidity")
+
+        if UVAvg > .5:  # if there is sunlight, rotate disk
+            GPIO.output(para['pinDisc'], 1)
+            rotateFlag = True
+        else:  # if not, stop rotating
+            GPIO.output(para['pinDisc'], 0)
+            rotateFlag = False
+
+        if not rotateFlag_old and rotateFlag:  # if sunlight becomes available
+            print("Auto: Sunlight! Rotating disk")
+        elif waterFlag_old and not waterFlag:
+            print("Auto: No Sunlight! Stop Rotating")
+
+        waterFlag_old = waterFlag
+        rotateFlag_old = rotateFlag
+
     except:
-        moisAvg
-
-    if moisAvg < humidity_control:  # if more dry than the preset humidity, open pump
-        GPIO.output(para['pinPump'], 1)
-        waterFlag = True
-    else:  # if not, close pump
-        GPIO.output(para['pinPump'], 0)
-        waterFlag = False
-
-    if not waterFlag_old and waterFlag:  # if becomes dry
-        print("Auto: too dry, water the plant")
-    elif waterFlag_old and not waterFlag:
-        print("Auto: proper humidity")
-
-    if UVAvg > .5:  # if there is sunlight, rotate disk
-        GPIO.output(para['pinDisc'], 1)
-        rotateFlag = True
-    else:  # if not, stop rotating
-        GPIO.output(para['pinDisc'], 0)
-        rotateFlag = False
-
-    if not rotateFlag_old and rotateFlag:  # if sunlight becomes available
-        print("Auto: Sunlight! Rotating disk")
-    elif waterFlag_old and not waterFlag:
-        print("Auto: No Sunlight! Stop Rotating")
-
-    waterFlag_old = waterFlag
-    rotateFlag_old = rotateFlag
+        print("-")

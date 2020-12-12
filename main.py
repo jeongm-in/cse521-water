@@ -124,15 +124,19 @@ def main():
     
     tCollectData.joinEnable(True)
 
+    waterFlag_old = waterFlag
+    rotateFlag_old = rotateFlag
+
     while True:
         humidity_control = 50
 
 
         while autoMode:     # in auto mode
-            autoBehave(moisDataList, UVDataList, humidity_control)
+            autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotateFlag_old)
             # , waterFlag_old, rotateFlag_old
 
             time.sleep(.5)
+            print("waterFlag_old: {}".format(waterFlag_old))
         while not autoMode: # in manual mode
 
             time.sleep(1)

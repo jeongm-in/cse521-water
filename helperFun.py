@@ -11,8 +11,8 @@ import json
 autoMode = True  # 0: auto mode; 1: manual mode
 waterFlag = False
 rotateFlag = False
-waterFlag_old = waterFlag
-rotateFlag_old = rotateFlag
+# waterFlag_old = waterFlag
+# rotateFlag_old = rotateFlag
 iotConnected = False
 desired_hum = 0
 
@@ -151,7 +151,8 @@ def on_connect(client, userdata, flags, rc):
 """
 when set as auto mode
 """
-def autoBehave(moisDataList, UVDataList, humidity_control):
+def autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotateFlag_old):
+
     print("waterFlag_old: {}".format(waterFlag_old))
     try:
         moisAvg = round(sum(moisDataList) / len(moisDataList), 1)

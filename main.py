@@ -135,9 +135,11 @@ def main():
             waterFlag_old, rotateFlag_old = autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_old)
 
             time.sleep(.5)
+            print(desired_hum)
         while not autoMode: # in manual mode
 
-            time.sleep(1)
+            time.sleep(.5)
+            print(desired_hum)
 
 
 

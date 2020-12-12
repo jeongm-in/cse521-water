@@ -164,6 +164,8 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
             GPIO.output(para['pinPump'], 0)
             waterFlag = False
 
+        print(waterFlag, waterFlag_old)
+
         if not waterFlag_old and waterFlag:  # if becomes dry
             print("Auto: too dry, water the plant")
         elif waterFlag_old and not waterFlag:
@@ -184,7 +186,6 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
         waterFlag_old = waterFlag
         rotateFlag_old = rotateFlag
 
-        print(waterFlag, waterFlag_old)
         return waterFlag_old, rotateFlag_old
 
     except:

@@ -12,20 +12,18 @@ awsSendPeriod = 5     # 5 sec
 
 
 def main():
+    # some configuration
     para = sf.pinMap()
-    sf.sensorConfig()
+    data, moisDataList, UVDataList = sf.sensorConfig()
     awsClient, toIotTopic = af.awsConfig()
 
-    data = dict()
-    moisDataList = []
-    UVDataList = []
-
-
+    # initial timer
     tCollectData = hf.RepeatedTimer(sensorReadPeriod, hf.collectData, para, moisDataList, UVDataList, data)
     tSendData = hf.RepeatedTimer(awsSendPeriod, hf.sendData, awsClient, toIotTopic, data, moisDataList, UVDataList)
     
     tCollectData.joinEnable(True)
 
+    # initial some var
     waterFlag_old = hf.waterFlag
     rotateFlag_old = hf.rotateFlag
 

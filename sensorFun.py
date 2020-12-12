@@ -28,6 +28,8 @@ def sensorConfig():
     GPIO.output(para['pinPump'], 0)
     GPIO.output(para['pinDisc'], 0)
 
+    return dict(), [], []
+
 
 
 def sensorReading(para):

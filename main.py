@@ -132,7 +132,7 @@ def main():
 
 
         while autoMode:     # in auto mode
-            autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotateFlag_old)
+            waterFlag_old, rotateFlag_old = autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotateFlag_old)
             # , waterFlag_old, rotateFlag_old
 
             time.sleep(.5)

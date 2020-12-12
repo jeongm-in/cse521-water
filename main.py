@@ -35,7 +35,7 @@ def main():
             waterFlag_old, rotateFlag_old = hf.autoBehave(moisDataList, UVDataList, hf.desired_hum, waterFlag_old, rotateFlag_old)
 
             time.sleep(.5)
-            print(hf.desired_hum)
+            # print(hf.desired_hum)
         while not hf.autoMode: # in manual mode
 
             time.sleep(.5)

@@ -133,10 +133,8 @@ def main():
 
         while autoMode:     # in auto mode
             waterFlag_old, rotateFlag_old = autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotateFlag_old)
-            # , waterFlag_old, rotateFlag_old
 
             time.sleep(.5)
-            print("waterFlag_old: {}".format(waterFlag_old))
         while not autoMode: # in manual mode
 
             time.sleep(1)

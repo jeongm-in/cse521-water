@@ -153,6 +153,8 @@ def main():
     
     tCollectData = RepeatedTimer(1, collectData, para, moisDataList, UVDataList, data)
     tSendData = RepeatedTimer(5, sendData, awsClient, toIotTopic, data, moisDataList, UVDataList)
+
+    tSendData.joinEable(True)
     
     time.sleep(100)
     

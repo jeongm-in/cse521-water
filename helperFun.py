@@ -28,6 +28,10 @@ class RepeatedTimer(object):
         self._timer.cancel()
         self.is_running = False
 
+    def joinEnable(self, val):
+        if val:
+            self._timer.join()
+
 
 def on_message(client, userdata, message):
     print("---------------------------\n"

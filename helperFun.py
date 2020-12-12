@@ -150,6 +150,7 @@ def on_connect(client, userdata, flags, rc):
 when set as auto mode
 """
 def autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotateFlag_old):
+    print("waterFlag_old: {}".format(waterFlag_old))
     try:
         moisAvg = round(sum(moisDataList) / len(moisDataList), 1)
         UVAvg = round(sum(UVDataList) / len(UVDataList), 1)
@@ -180,6 +181,7 @@ def autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotate
 
         waterFlag_old = waterFlag
         rotateFlag_old = rotateFlag
+        print("waterFlag_old: {}".format(waterFlag_old))
 
     except:
-        print("-")
+        print("Sending data")

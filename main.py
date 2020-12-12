@@ -127,7 +127,7 @@ def main():
     waterFlag_old = waterFlag
     rotateFlag_old = rotateFlag
 
-    desired_hum = 50
+    # desired_hum = 50
 
     while True:
 

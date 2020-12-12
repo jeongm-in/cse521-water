@@ -1,10 +1,7 @@
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import RPi.GPIO as GPIO
 
-import board
-import busio
-import adafruit_ads1x15.ads1115 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
+
 
 import logging
 import json
@@ -21,35 +18,6 @@ AllowedActions = ['both', 'publish', 'subscribe']
 sensorReadPeriod = 1  # 1 sec
 awsSendPeriod = 5     # 5 sec
 awsListenPeriod = 5   # 5 sec
-
-autoMode = True    # 0: auto mode; 1: manual mode
-waterFlag = False
-rotateFlag = False
-iotConnected = False
-desired_hum = 0
-
-para = dict()
-
-
-
-def sensorConfig():
-    """
-    config sensors
-    """
-    # GPIO.cleanup()
-    i2c = busio.I2C(board.SCL, board.SDA)
-
-    global para
-    para['ads'] = ADS.ADS1115(i2c)
-
-    para['pinPump'] = 21
-    para['pinDisc'] = 26
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(para['pinPump'], GPIO.OUT)
-    GPIO.setup(para['pinDisc'], GPIO.OUT)
-    GPIO.output(para['pinPump'], 0)
-    GPIO.output(para['pinDisc'], 0)
-
 
 
 def sensorReading(para):
@@ -151,14 +119,24 @@ def main():
     UVDataList = []
 
     
-    tCollectData = RepeatedTimer(1, collectData, para, moisDataList, UVDataList, data)
-    tSendData = RepeatedTimer(5, sendData, awsClient, toIotTopic, data, moisDataList, UVDataList)
+    tCollectData = RepeatedTimer(sensorReadPeriod, collectData, para, moisDataList, UVDataList, data)
+    tSendData = RepeatedTimer(awsSendPeriod, sendData, awsClient, toIotTopic, data, moisDataList, UVDataList)
     
     tCollectData.joinEnable(True)
-    
-    time.sleep(100)
-    
-    GPIO.cleanup()
+
+    while True:
+        humidity_control = 50
+        waterFlag_old = waterFlag
+        rotateFlag_old = rotateFlag
+        
+        while autoMode:     # in auto mode
+            autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotateFlag_old)
+
+            time.sleep(.5)
+        while not autoMode: # in manual mode
+
+            time.sleep(1)
+
 
 
 if __name__ == "__main__":

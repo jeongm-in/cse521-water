@@ -139,7 +139,7 @@ def main():
         while not autoMode: # in manual mode
 
             time.sleep(.5)
-            print(desired_hum)
+            print("manual mode")
 
 
 

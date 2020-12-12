@@ -8,7 +8,7 @@ import time
 import RPi.GPIO as GPIO
 import json
 
-autoMode = True  # 0: auto mode; 1: manual mode
+autoMode = True  # True: auto mode; False: manual mode
 waterFlag = False
 rotateFlag = False
 # waterFlag_old = waterFlag

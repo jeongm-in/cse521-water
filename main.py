@@ -30,70 +30,6 @@ desired_hum = 0
 
 para = dict()
 
-def on_connect(client, userdata, flags, rc):
-    if rc == 0:
-
-        print("Connected to IoT")
-
-        global iotConnected  # Use global variable
-        iotConnected = True  # Signal connection
-
-    else:
-        print("Connection failed")
-
-
-def on_message(client, userdata, message):
-    print("---------------------------\n"
-          "Received a new message from IoT \n ")
-          
-    json_string = message.payload.decode("utf-8") 
-    json_string = json_string.replace("u'", "\"").replace("'", "\"")
-    data = json.loads(json_string)
-    try:
-        if data['cmd'] == 'control':
-            global waterFlag, rotateFlag
-            if data['val'] == 'water_start':
-                GPIO.output(para['pinPump'], 1)
-                waterFlag = True
-                time.sleep(1)
-                GPIO.output(para['pinPump'], 0)
-                waterFlag = False
-
-                print('Watering the plant')
-            elif data['val'] == 'water_stop':
-                GPIO.output(para['pinPump'], 0)
-                waterFlag = False
-
-                print('Stop watering')
-            elif data['val'] == 'rotate_start':
-                GPIO.output(para['pinDisc'], 1)
-                rotateFlag = True
-
-                print('Rotating the disc')
-            elif data['val'] == 'rotate_stop':
-                GPIO.output(para['pinDisc'], 0)
-                rotateFlag = False
-
-                print('Stop rotating')
-            else:
-                print("Unknown control value")
-        elif data['cmd'] == 'mode_switch':
-            global autoMode
-            if data['val'] == 'auto':
-                autoMode = True
-                print('Change mode to auto')
-            elif data['val'] == 'manual':
-                autoMode = False
-                print('Change mode to manual')
-        elif data['cmd'] == 'humidity_control':
-            #global desired_hum
-            #desired_hum = str(data['val'])
-            print('Set desired humidity to ')
-            print(data['val'])
-            #print('Set desired humidity to {:.0f}'.format(desired_hum))
-    except:
-        print('Unknown command')
-    print("---------------------------")
 
 
 def sensorConfig():
@@ -123,15 +59,6 @@ def sensorReading(para):
     reading = {}
     reading['mois'] = AnalogIn(para['ads'], ADS.P1).voltage
     reading['uv'] = AnalogIn(para['ads'], ADS.P2).voltage
-
-    # if readMoisSens > 2.4:
-    #     GPIO.output(para['pinMoisSens'], 1)
-    #     print('Too dry, water the flower \nCurrent reading: {:.2f}'
-    #           .format(readMoisSens))
-    # else:
-    #     GPIO.output(para['pinMoisSens'], 0)
-    #     print('the flow is fine now \nCurrent reading: {:.2f}'
-    #           .format(readMoisSens))
 
     return reading
 
@@ -204,14 +131,14 @@ def sendData(awsClient, toIotTopic, data, moisDataList, UVDataList):
     for key, value in data.items():
         data[key] = round(sum(value) / len(value), 1)
 
+    # publish message to iot
+    awsSending(awsClient, toIotTopic, data)
+    print('Sent to AWS')
+
     # clean up reading data
     data = {}
     moisDataList = []
     UVDataList = []
-
-    # publish message to iot
-    awsSending(awsClient, toIotTopic, data)
-    print('Sent to AWS')
 
 
 def main():

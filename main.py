@@ -91,7 +91,7 @@ def collectData(para, moisDataList, UVDataList, data):
     # print('reading done')
     data['Humidity'] = moisDataList
     data['UV'] = UVDataList
-    print(data)
+    # print(data)
 
 
 def sendData(awsClient, toIotTopic, data, moisDataList, UVDataList):

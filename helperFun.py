@@ -187,4 +187,4 @@ def autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotate
         return waterFlag_old, rotateFlag_old
 
     except:
-        print("Sending data")
+        return waterFlag_old, rotateFlag_old

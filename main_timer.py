@@ -12,8 +12,8 @@ import random
 
 import time
 import datetime
+import threading
 
-from helperFun import *
 
 AllowedActions = ['both', 'publish', 'subscribe']
 
@@ -196,7 +196,6 @@ def collectData(para, moisDataList, UVDataList, data):
     # print('reading done')
     data['Humidity'] = moisDataList
     data['UV'] = UVDataList
-    print(data)
 
 
 def sendData(awsClient, toIotTopic, data, moisDataList, UVDataList):
@@ -221,13 +220,52 @@ def main():
     data = {}
     moisDataList = []
     UVDataList = []
+    
+    # for i in range(1,300):
+    #     if not i % awsSendPeriod:
+    #
+    #         # get averaged readings for each sensor
+    #         for key, value in data.items():
+    #             data[key] = round(sum(value)/len(value), 1)
+    #
+    #         # publish message to iot
+    #         awsSending(awsClient, toIotTopic, data)
+    #         print('Sent to AWS')
+    #
+    #         j = 0
+    #         data = {}
+    #         moisDataList = []
+    #         UVDataList = []
+    #     elif not i % sensorReadPeriod:
+    #         moisreading = round(-42.9*sensorReading(para)['mois']+156.6)
+    #         moisDataList.append(moisreading)
+    #         uvreading = round(sensorReading(para)['uv']*10, 1)
+    #         UVDataList.append(uvreading)
+    #         print('Moisure reading: {:.0f}%, UV reading: {:.1f} index'
+    #              .format(moisreading, uvreading))
+    #         # print('reading done')
+    #         data['Humidity'] = moisDataList
+    #         data['UV'] = UVDataList
+    #         j += 1
+    #     else:
+    #         print("Nothing to do now")
+    #
+    #     time.sleep(1)
+    #
+    # GPIO.cleanup()
 
+    tCollectData = threading.Timer(1, collectData, args=(para, moisDataList, UVDataList, data))
+    tSendData = threading.Timer(5, sendData, args=(awsClient, toIotTopic, data, moisDataList, UVDataList))
+
+    tCollectData.start()
+    #tSendData.start()
     
-    tCollectData = RepeatedTimer(1, collectData, para, moisDataList, UVDataList, data)
-    tSendData = RepeatedTimer(5, sendData, awsClient, toIotTopic, data, moisDataList, UVDataList)
-    
-    time.sleep(100)
-    
+    tCollectData.join()
+    #tSendData.join()
+
+    for i in range(27):
+        #print(data)
+        time.sleep(.5)
     GPIO.cleanup()
 
 

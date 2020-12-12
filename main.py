@@ -126,11 +126,11 @@ def main():
 
     while True:
         humidity_control = 50
-        waterFlag_old = waterFlag
-        rotateFlag_old = rotateFlag
+
 
         while autoMode:     # in auto mode
-            autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotateFlag_old)
+            autoBehave(moisDataList, UVDataList, humidity_control)
+            # , waterFlag_old, rotateFlag_old
 
             time.sleep(.5)
         while not autoMode: # in manual mode

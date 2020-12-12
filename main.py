@@ -128,7 +128,7 @@ def main():
         humidity_control = 50
         waterFlag_old = waterFlag
         rotateFlag_old = rotateFlag
-        
+
         while autoMode:     # in auto mode
             autoBehave(moisDataList, UVDataList, humidity_control, waterFlag_old, rotateFlag_old)
 

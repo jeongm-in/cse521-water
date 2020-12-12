@@ -80,6 +80,7 @@ def on_message(client, userdata, message):
     json_string = message.payload.decode("utf-8")
     json_string = json_string.replace("u'", "\"").replace("'", "\"")
     data = json.loads(json_string)
+    global autoMode
     try:
         if data['cmd'] == 'control':
             if autoMode:
@@ -112,7 +113,6 @@ def on_message(client, userdata, message):
                 else:
                     print("Unknown control value")
         elif data['cmd'] == 'mode_switch':
-            global autoMode
             if data['val'] == 'auto':
                 autoMode = True
 

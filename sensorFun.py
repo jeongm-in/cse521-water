@@ -11,7 +11,7 @@ def pinMap():
     para['ads'] = ADS.ADS1115(i2c)
 
     para['pinPump'] = 21
-    para['pinDisc'] = 26
+    para['pinDisc'] = [4, 17, 27, 22]
 
     return para
 

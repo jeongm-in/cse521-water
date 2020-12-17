@@ -64,9 +64,12 @@ class DiskRotation(object):
         return self.iter
 
     def updateIter(self):
-        self.iter += 1
-        if self.iter >= 8:
+        self.iter = (self.iter+1) % 8
+        if self.iter >= 400:
             self.iter = 0
+
+            global rotateFlag
+            rotateFlag = False
 
     def rotate(self):
         for num in range(4):
@@ -129,10 +132,10 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
             print("Auto: proper humidity")
 
         if UVAvg > .5:  # if there is sunlight, rotate disk
-            GPIO.output(para['pinDisc'], 1)
+            # GPIO.output(para['pinDisc'], 1)
             rotateFlag = True
         else:  # if not, stop rotating
-            GPIO.output(para['pinDisc'], 0)
+            # GPIO.output(para['pinDisc'], 0)
             rotateFlag = False
 
         if not rotateFlag_old and rotateFlag:  # if sunlight becomes available

@@ -9,7 +9,7 @@ import sensorFun as sf
 # specify the period as integer second
 sensorReadPeriod = 1    # 1 sec
 awsSendPeriod = 5       # 5 sec
-rotatePeriod = 0.01     # 0.01 sec, for rotating disk
+rotatePeriod = 0.005     # 0.01 sec, for rotating disk
 
 
 
@@ -32,7 +32,6 @@ def main():
 
     tDisk = hf.RepeatedTimer(rotatePeriod, disk.rotate)
     tDisk.stop()
-
 
 
     while True:

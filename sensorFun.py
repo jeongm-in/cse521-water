@@ -6,7 +6,7 @@ import RPi.GPIO as GPIO
 
 def pinMap():
     para = dict()
-
+    
     i2c = busio.I2C(board.SCL, board.SDA)
     para['ads'] = ADS.ADS1115(i2c)
 
@@ -21,7 +21,8 @@ config sensors
 def sensorConfig():
     # GPIO.cleanup()
     para = pinMap()
-
+    
+    GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(para['pinPump'], GPIO.OUT)
     GPIO.setup(para['pinDisc'], GPIO.OUT)

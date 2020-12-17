@@ -82,12 +82,12 @@ def on_message(client, userdata, message):
 
                     print('Manual: Stop watering')
                 elif data['val'] == 'rotate_start':
-                    GPIO.output(para['pinDisc'], 1)
+                    # GPIO.output(para['pinDisc'], 1)
                     hf.rotateFlag = True
 
                     print('Manual: Rotating the disc')
                 elif data['val'] == 'rotate_stop':
-                    GPIO.output(para['pinDisc'], 0)
+                    # GPIO.output(para['pinDisc'], 0)
                     hf.rotateFlag = False
 
                     print('Manual: Stop rotating')

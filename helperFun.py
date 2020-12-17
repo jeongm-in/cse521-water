@@ -45,6 +45,36 @@ class RepeatedTimer(object):
             self._timer.join()
 
 
+class DiskRotation(object):
+    def __init__(self, pin, *args, **kwargs):
+        self.iter = 0
+        self.halfStep_seq = [
+          [1,0,0,0],
+          [1,1,0,0],
+          [0,1,0,0],
+          [0,1,1,0],
+          [0,0,1,0],
+          [0,0,1,1],
+          [0,0,0,1],
+          [1,0,0,1]
+        ]
+        self.pin = pin
+
+    def getIter(self):
+        return self.iter
+
+    def updateIter(self):
+        self.iter += 1
+        if self.iter >= 8:
+            self.iter = 0
+
+    def rotate(self):
+        for num in range(4):
+            GPIO.output(self.pin[num], self.halfStep_seq[self.iter][num])
+
+        self.updateIter()
+
+
 def collectData(para, moisDataList, UVDataList, data):
     moisreading = round(-42.9 * sf.sensorReading(para)['mois'] + 156.6)
     moisDataList.append(moisreading)
@@ -117,6 +147,4 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
 
     except:
         return waterFlag_old, rotateFlag_old
-
-
 

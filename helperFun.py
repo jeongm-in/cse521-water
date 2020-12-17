@@ -68,7 +68,7 @@ class DiskRotation(object):
     def updateIter(self):
         self.totalIter = self.totalIter+1
         self.iter = self.totalIter % 8
-        if self.totalIter >= 400:
+        if self.totalIter >= 800:
             self.totalIter = 0
 
             global rotateFlag

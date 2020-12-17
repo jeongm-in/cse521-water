@@ -129,7 +129,7 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
             waterFlag = False
             print('wet')
 
-        print('dry: {.2f}%, {.2f}%'.format(moisAvg, desired_hum))
+        print('dry: {:.2f}, {:.2f}'.format(moisAvg, desired_hum))
 
         if not waterFlag_old and waterFlag:  # if becomes dry
             print("Auto: too dry, START watering")

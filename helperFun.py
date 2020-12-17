@@ -152,5 +152,6 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
         return waterFlag, rotateFlag
 
     except:
+        print('except {:.2f}'.format(desired_hum))
         return waterFlag, rotateFlag
 

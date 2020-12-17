@@ -48,6 +48,7 @@ class RepeatedTimer(object):
 class DiskRotation(object):
     def __init__(self, pin, *args, **kwargs):
         self.iter = 0
+        self.totalIter = 0
         self.halfStep_seq = [
           [1,0,0,0],
           [1,1,0,0],
@@ -64,9 +65,10 @@ class DiskRotation(object):
         return self.iter
 
     def updateIter(self):
-        self.iter = (self.iter+1) % 8
-        if self.iter >= 400:
-            self.iter = 0
+        self.totalIter = self.totalIter+1
+        self.iter = self.totalIter % 8
+        if self.totalIter >= 400:
+            self.totalIter = 0
 
             global rotateFlag
             rotateFlag = False
@@ -121,15 +123,17 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
         if moisAvg < desired_hum:  # if more dry than the preset humidity, open pump
             GPIO.output(para['pinPump'], 1)
             waterFlag = True
+            print('dry')
         else:  # if not, close pump
             GPIO.output(para['pinPump'], 0)
             waterFlag = False
+            print('wet')
 
 
         if not waterFlag_old and waterFlag:  # if becomes dry
-            print("Auto: too dry, water the plant")
+            print("Auto: too dry, START watering")
         elif waterFlag_old and not waterFlag:
-            print("Auto: proper humidity")
+            print("Auto: proper humidity, STOP watering")
 
         if UVAvg > .5:  # if there is sunlight, rotate disk
             # GPIO.output(para['pinDisc'], 1)
@@ -139,15 +143,13 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
             rotateFlag = False
 
         if not rotateFlag_old and rotateFlag:  # if sunlight becomes available
-            print("Auto: Sunlight! Rotating disk")
+            print("Auto: Sunlight! START rotating disk")
         elif rotateFlag_old and not rotateFlag:
-            print("Auto: No Sunlight! Stop Rotating")
+            print("Auto: No Sunlight! STOP Rotating")
 
-        waterFlag_old = waterFlag
-        rotateFlag_old = rotateFlag
 
-        return waterFlag_old, rotateFlag_old
+        return waterFlag, rotateFlag
 
     except:
-        return waterFlag_old, rotateFlag_old
+        return waterFlag, rotateFlag
 

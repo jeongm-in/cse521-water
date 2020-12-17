@@ -53,7 +53,6 @@ def main():
                 tDisk.stop()
 
             time.sleep(.5)
-            # print("manual mode")
 
 
 

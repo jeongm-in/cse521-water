@@ -124,7 +124,7 @@ def on_connect(client, userdata, flags, rc):
         print("Connection failed")
 
 
-def awsSending(client, topic, data):
+def awsSending(client, topic, data, pumpTrigger):
     """
     send data to AWS
     """
@@ -133,6 +133,8 @@ def awsSending(client, topic, data):
 
     for key, value in data.items():
         message[key] = value
+
+    message["pump_status"] = pumpTrigger
 
     messageJson = json.dumps(message)
     client.publish(topic, messageJson, 1)

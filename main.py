@@ -28,7 +28,7 @@ def main():
     tCollectData = hf.RepeatedTimer(sensorReadPeriod, hf.collectData, para, moisDataList, UVDataList, data)
     tCollectData.joinEnable(True)
 
-    tSendData = hf.RepeatedTimer(awsSendPeriod, hf.sendData, awsClient, toIotTopic, data, moisDataList, UVDataList)
+    tSendData = hf.RepeatedTimer(awsSendPeriod, hf.sendData, awsClient, toIotTopic, data, moisDataList, UVDataList, hf.pumpTrigger)
 
     tDisk = hf.RepeatedTimer(rotatePeriod, disk.rotate)
     tDisk.stop()

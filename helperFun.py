@@ -9,6 +9,7 @@ autoMode = True  # True: auto mode; False: manual mode
 desired_hum = 50
 waterFlag = False
 rotateFlag = False
+pumpTrigger = 0
 
 
 
@@ -85,8 +86,8 @@ def collectData(para, moisDataList, UVDataList, data):
     moisDataList.append(moisreading)
     uvreading = round(sf.sensorReading(para)['uv'] * 10, 1)
     UVDataList.append(uvreading)
-    print('Moisure reading: {:.0f}%, UV reading: {:.1f} index'
-          .format(moisreading, uvreading))
+    # print('Moisure reading: {:.0f}%, UV reading: {:.1f} index'
+          # .format(moisreading, uvreading))
 
     data['Humidity'] = moisDataList
     data['UV'] = UVDataList
@@ -98,8 +99,11 @@ def sendData(awsClient, toIotTopic, data, moisDataList, UVDataList):
     for key, value in data.items():
         data[key] = round(sum(value) / len(value), 1)
 
+    global pumpTrigger
+    pumpStatus = pumpTrigger
+
     # publish message to iot
-    af.awsSending(awsClient, toIotTopic, data)
+    af.awsSending(awsClient, toIotTopic, data, pumpStatus)
     print('Sent to AWS')
 
     # clean up reading data
@@ -117,15 +121,17 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
         moisAvg = round(sum(moisDataList) / len(moisDataList), 1)
         UVAvg = round(sum(UVDataList) / len(UVDataList), 1)
 
-        global waterFlag, rotateFlag
+        global waterFlag, rotateFlag, pumpTrigger
         para = sf.pinMap()
 
         if moisAvg < desired_hum:  # if more dry than the preset humidity, open pump
             GPIO.output(para['pinPump'], 1)
+            pumpTrigger = 1
             waterFlag = True
 
         else:  # if not, close pump
             GPIO.output(para['pinPump'], 0)
+            pumpTrigger = 0
             waterFlag = False
 
         if not waterFlag_old and waterFlag:  # if becomes dry

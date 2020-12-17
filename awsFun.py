@@ -103,7 +103,7 @@ def on_message(client, userdata, message):
 
                 print('Change mode to manual')
         elif data['cmd'] == 'humidity_control':
-            hf.desired_hum = data['val']
+            hf.desired_hum = int(data['val'])
 
             print('Set desired humidity to ')
             print(data['val'])

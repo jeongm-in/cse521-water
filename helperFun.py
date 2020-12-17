@@ -123,12 +123,13 @@ def autoBehave(moisDataList, UVDataList, desired_hum, waterFlag_old, rotateFlag_
         if moisAvg < desired_hum:  # if more dry than the preset humidity, open pump
             GPIO.output(para['pinPump'], 1)
             waterFlag = True
-            print('dry: {.2f}%, {.2f}%'.format(moisAvg, desired_hum))
+
         else:  # if not, close pump
             GPIO.output(para['pinPump'], 0)
             waterFlag = False
             print('wet')
 
+        print('dry: {.2f}%, {.2f}%'.format(moisAvg, desired_hum))
 
         if not waterFlag_old and waterFlag:  # if becomes dry
             print("Auto: too dry, START watering")

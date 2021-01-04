@@ -1,0 +1,8 @@
+Web Console: 
+1. Generate your own AWS IoT topic with name matched pub_topic.py, other name is allowed but require   name modification in pub_topic.py
+2. Follow the stem in INSTALL's web Console section
+3. Website part is able to run. 
+
+AWS Lambda Function:
+Deploy the two functions to the Lambda function. 
+Add the Database credentials to each file.

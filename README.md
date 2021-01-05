@@ -17,3 +17,8 @@ Final project for Washington University in St. Louis CSE521S
 4. UV sunlight sensor
 5. AWS IoT Platform
 6. Any Linux based server to host website
+
+
+## Links
+- Final Demo Video: https://youtu.be/C6JYZ_s9vHU
+- Website Link: http://cpp.moe (will be offline after the beginning of the next semester)

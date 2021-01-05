@@ -1,5 +1,5 @@
 # cse521-autowater project
-CSE521S Project
+Final project for Washington University in St. Louis CSE521S
 
 ## Hardware 
 * **main.py** achieves the 

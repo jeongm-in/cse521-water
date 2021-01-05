@@ -1,0 +1,38 @@
+$aws/things/cse521/shadow/message_to_iot
+$aws/things/cse521/shadow/message_to_pi
+
+
+{
+	"cmd":"control",
+	"val":"water_start"
+}
+
+{
+	"cmd":"control",
+	"val":"water_stop"
+}
+
+{
+	"cmd":"control",
+	"val":"rotate_start"
+}
+
+{
+	"cmd":"control",
+	"val":"rotate_stop"
+}
+
+{
+	"cmd":"mode_switch",
+	"val":"auto"
+}
+
+{
+	"cmd":"mode_switch",
+	"val":"manual"
+}
+
+{
+	"cmd":"humidity_control",
+	"val":xxx
+}

@@ -1,0 +1,11 @@
+Web Console Installation: 
+Frontend:
+1. Prepare a Linux based server with LAMP (Linux, Apache, MySQL, PHP/Python) software installed. 
+2. Upload content of 'Frontend Build' to web directory
+3. Ready to use
+
+Backend:
+1. Prepare a Linux based server with LAMP (Linux, Apache, MySQL, PHP/Python) software installed. 
+2. Upload content of 'Backend' to web directory
+3. Upload the pub_topic.py to a desired location and modify the file path in ConsoleController.php(Be sure to add your own ASW IoT certifications)
+4. Ready to use
